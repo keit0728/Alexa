@@ -1,0 +1,6 @@
+_tmp/
+
+# Alexa初期
+lambda/node_modules
+.ask/
+ask-resources.json
