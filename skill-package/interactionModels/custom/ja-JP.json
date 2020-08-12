@@ -1,7 +1,7 @@
 {
   "interactionModel": {
     "languageModel": {
-      "invocationName": "todo",
+      "invocationName": "g h a x to do",
       "intents": [
         {
           "name": "AMAZON.CancelIntent",
@@ -16,16 +16,12 @@
           "samples": []
         },
         {
-          "name": "HelloWorldIntent",
+          "name": "InsertIntent",
           "slots": [],
           "samples": [
-            "hello",
-            "how are you",
-            "say hi world",
-            "say hi",
-            "hi",
-            "say hello world",
-            "say hello"
+            "りんごを買うを追加して",
+            "りんごを買うを登録して",
+            "りんごを買う"
           ]
         },
         {
@@ -36,5 +32,5 @@
       "types": []
     }
   },
-  "version": "2"
+  "version": "5"
 }
