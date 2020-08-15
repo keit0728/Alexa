@@ -1,3 +1,6 @@
+// グローバル変数宣言
+const REPROMPT = '何を登録しますか？';  //ユーザーからの応答がない場合にAlexaが呼びかける文章
+
 // SDKライブラリを読み込む
 const Alexa = require('ask-sdk-core');
 
@@ -7,11 +10,10 @@ const LaunchRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const speakOutput = 'G h A x To do へようこそ。何を To do リストに追加しますか？';
-        const reprompt = '何を追加しますか？';
+        const speakOutput = 'G h A x To do へようこそ。何を To do リストに登録しますか？';
         return handlerInput.responseBuilder
             .speak(speakOutput)     // Alexaが話す
-            .reprompt(reprompt)     // 8秒待っても応答がない場合は再度話しかける(さらに8秒経つと終了)
+            .reprompt(REPROMPT)     // 8秒待っても応答がない場合は再度話しかける(さらに8秒経つと終了)
             .getResponse();         // Alexaがユーザーからのレスポンスを待つ
     }
 };
@@ -28,7 +30,7 @@ const InsertIntentHandler = {
         
         let todo = handlerInput.requestEnvelope.request.intent.slots.todo.value;    // 追加するTodoの名称取得
         
-        const speakOutput = todo + 'を追加しました。';
+        const speakOutput = todo + 'を登録しました。';
         return handlerInput.responseBuilder
             .speak(speakOutput) // Alexaが話す
             .getResponse();     // Alexaがユーザーからのレスポンスを待つ
@@ -42,12 +44,11 @@ const HelpIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
     },
     handle(handlerInput) {
-        const speakOutput = '「りんごを買う を追加して」のように話しかければ To do リストに追加することができます。何を追加しますか？';
-        const reprompt = '何を追加しますか？';
+        const speakOutput = '「りんごを買う を登録して」のように話しかければ To do リストに登録することができます。何を登録しますか？';
 
         return handlerInput.responseBuilder
             .speak(speakOutput)     // Alexaが話す
-            .reprompt(reprompt)     // 8秒待っても応答がない場合は再度話しかける(さらに8秒経つと終了)
+            .reprompt(REPROMPT)     // 8秒待っても応答がない場合は再度話しかける(さらに8秒経つと終了)
             .getResponse();         // Alexaがユーザーからのレスポンスを待つ
     }
 };
@@ -62,8 +63,8 @@ const CancelAndStopIntentHandler = {
     handle(handlerInput) {
         const speakOutput = 'さようなら';
         return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .getResponse();
+            .speak(speakOutput) // Alexaが話す
+            .getResponse();     // Alexaがユーザーからのレスポンスを待つ
     }
 };
 
@@ -73,7 +74,6 @@ const SessionEndedRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'SessionEndedRequest';
     },
     handle(handlerInput) {
-        // Any cleanup logic goes here.
         return handlerInput.responseBuilder.getResponse();
     }
 };
@@ -103,9 +103,9 @@ const ErrorHandler = {
         const speakOutput = `すみません、なんだかうまくいかないようです。もう一度お試し下さい。`;
 
         return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .reprompt(speakOutput)
-            .getResponse();
+            .speak(speakOutput)     // Alexaが話す
+            .reprompt(speakOutput)  // 8秒待っても応答がない場合は再度話しかける(さらに8秒経つと終了)
+            .getResponse();         // Alexaがユーザーからのレスポンスを待つ
     }
 };
 
@@ -117,7 +117,7 @@ exports.handler = Alexa.SkillBuilders.custom()
         HelpIntentHandler,
         CancelAndStopIntentHandler,
         SessionEndedRequestHandler,
-        IntentReflectorHandler, // make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers
+        IntentReflectorHandler,
     )
     .addErrorHandlers(  // エラーのとき
         ErrorHandler,
