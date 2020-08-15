@@ -7,12 +7,12 @@ const LaunchRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const speakOutput = 'G h A x To do へようこそ。何を To do リストに登録しますか？';
-        const reprompt = '何を登録しますか？';
+        const speakOutput = 'G h A x To do へようこそ。何を To do リストに追加しますか？';
+        const reprompt = '何を追加しますか？';
         return handlerInput.responseBuilder
             .speak(speakOutput)     // Alexaが話す
             .reprompt(reprompt)     // 8秒待っても応答がない場合は再度話しかける(さらに8秒経つと終了)
-            .getResponse();
+            .getResponse();         // Alexaがユーザーからのレスポンスを待つ
     }
 };
 
@@ -23,12 +23,15 @@ const InsertIntentHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'InsertIntent';
     },
-    //処理する内容
+    // 処理する内容
     handle(handlerInput) {
-        const speakOutput = 'りんごを買う を登録しました。';
+        
+        let todo = handlerInput.requestEnvelope.request.intent.slots.todo.value;    // 追加するTodoの名称取得
+        
+        const speakOutput = todo + 'を追加しました。';
         return handlerInput.responseBuilder
             .speak(speakOutput) // Alexaが話す
-            .getResponse();
+            .getResponse();     // Alexaがユーザーからのレスポンスを待つ
     }
 };
 
@@ -39,13 +42,13 @@ const HelpIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
     },
     handle(handlerInput) {
-        const speakOutput = '「りんごを買う を登録して」のように話しかければ To do リストに登録することができます。何を登録しますか？';
-        const reprompt = '何を登録しますか？';
+        const speakOutput = '「りんごを買う を追加して」のように話しかければ To do リストに追加することができます。何を追加しますか？';
+        const reprompt = '何を追加しますか？';
 
         return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .reprompt(reprompt)
-            .getResponse();
+            .speak(speakOutput)     // Alexaが話す
+            .reprompt(reprompt)     // 8秒待っても応答がない場合は再度話しかける(さらに8秒経つと終了)
+            .getResponse();         // Alexaがユーザーからのレスポンスを待つ
     }
 };
 
