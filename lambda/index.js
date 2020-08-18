@@ -1,6 +1,10 @@
 // グローバル変数宣言 --------------------------------------------------------------------------------------------------
 const Alexa = require('ask-sdk-core');  // SDKライブラリを読み込む
+const AWS = require('aws-sdk');         // 永続アトリビュート用
+const persistenceAdapter = require('ask-sdk-s3-persistence-adapter');   // 永続アトリビュート用
+const S3_PERSISTENCE_BUCKET = '58db6cab-1edb-432c-bb1f-6cb0bf8eb298-us-east-1';
 const REPROMPT = '何を登録しますか？';  // ユーザーからの応答がない場合にAlexaが呼びかける文章
+const SKILL_NAME = 'G h A x To do';
 
 
 // 開始処理を行う ------------------------------------------------------------------------------------------------------
@@ -11,7 +15,7 @@ const LaunchRequestHandler = {
     },
     // 処理する内容
     handle(handlerInput) {
-        const speakOutput = 'G h A x To do へようこそ。何を To do リストに登録しますか？';
+        const speakOutput = `${SKILL_NAME}へようこそ。何を To do リストに登録しますか？`;
         return handlerInput.responseBuilder
             .speak(speakOutput)     // Alexaが話す
             .reprompt(REPROMPT)     // ユーザーからのレスポンスを待つ(Alexaが話しかけてから8秒間ユーザー応答が得られない->REPROMPTをAlexaが喋る->再度8秒経過で終了)
@@ -27,9 +31,16 @@ const InsertIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'InsertIntent';
     },
     // 処理する内容
-    handle(handlerInput) {
+    async handle(handlerInput) {
+        
+        const attributesManager = handlerInput.attributesManager;   // 永続アトリビュート用
         
         let todo = handlerInput.requestEnvelope.request.intent.slots.todo.value;    // 追加するTodoの名称取得
+        
+        // 永続アトリビュート用(S3 データベースに保存)
+        let lastTodo = {"todo":todo};
+        attributesManager.setPersistentAttributes(lastTodo);
+        await attributesManager.savePersistentAttributes();
         
         const speakOutput = `${todo}を登録しました。`;
         return handlerInput.responseBuilder
@@ -130,5 +141,10 @@ exports.handler = Alexa.SkillBuilders.custom()
     )
     .addErrorHandlers(  // エラーのとき
         ErrorHandler,
+    )
+    .withPersistenceAdapter(    // 永続アトリビュート用
+        new persistenceAdapter.S3PersistenceAdapter({
+            bucketName: S3_PERSISTENCE_BUCKET
+        })
     )
     .lambda();
